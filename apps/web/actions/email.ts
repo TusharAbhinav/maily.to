@@ -13,6 +13,7 @@ import {
 import type { Database } from '@/types/database';
 import { UnreachableCaseError } from './error';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { useEditorContext } from '@/stores/editor-store';
 
 const previewEmailSchema = z.object({
   json: z.string().min(1, 'Please provide a JSON'),
@@ -186,6 +187,7 @@ const saveEmailSchema = z.object({
   subject: z.string().min(1, 'Please provide a subject'),
   json: z.string().min(1, 'Please provide a JSON'),
   previewText: z.string(),
+  html: z.string(),
 });
 
 export async function saveEmailAction(formData: FormData) {
@@ -193,6 +195,7 @@ export async function saveEmailAction(formData: FormData) {
     subject: formData.get('subject'),
     json: formData.get('json'),
     previewText: formData.get('previewText'),
+    html: formData.get('html'),
   });
 
   if (!result.success) {
@@ -206,7 +209,7 @@ export async function saveEmailAction(formData: FormData) {
     };
   }
 
-  const { subject, json, previewText } = result.data;
+  const { subject, json, previewText, html } = result.data;
 
   const supabase = createSupabaseServerClient();
   const {
@@ -230,6 +233,7 @@ export async function saveEmailAction(formData: FormData) {
       content: json,
       user_id: user.id,
       preview_text: previewText,
+      html_content: html,
     })
     .select()
     .single();
@@ -243,7 +247,6 @@ export async function saveEmailAction(formData: FormData) {
       },
     };
   }
-
   revalidatePath('/template', 'layout');
 
   return {
@@ -257,6 +260,7 @@ const updateEmailSchema = z.object({
   subject: z.string().min(1, 'Please provide a subject'),
   json: z.string().min(1, 'Please provide a JSON'),
   previewText: z.string(),
+  html: z.string(),
 });
 
 export async function updateEmailAction(formData: FormData) {
@@ -265,6 +269,7 @@ export async function updateEmailAction(formData: FormData) {
     subject: formData.get('subject'),
     json: formData.get('json'),
     previewText: formData.get('previewText'),
+    html: formData.get('html'),
   });
 
   if (!result.success) {
@@ -278,7 +283,7 @@ export async function updateEmailAction(formData: FormData) {
     };
   }
 
-  const { templateId, subject, json, previewText } = result.data;
+  const { templateId, subject, json, previewText, html } = result.data;
 
   const supabase = createSupabaseServerClient();
   const {
@@ -320,6 +325,7 @@ export async function updateEmailAction(formData: FormData) {
       title: subject,
       content: json,
       preview_text: previewText,
+      html_content: html,
     })
     .match({
       id: templateId,
@@ -336,7 +342,6 @@ export async function updateEmailAction(formData: FormData) {
       },
     };
   }
-
   revalidatePath(`/template/${templateId}`);
 
   return {

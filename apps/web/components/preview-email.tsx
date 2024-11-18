@@ -3,7 +3,7 @@
 // @ts-ignore
 import { useFormStatus } from 'react-dom';
 import { Eye, Loader2 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { shallow } from 'zustand/shallow';
 import { previewEmailAction } from '@/actions/email';
@@ -67,7 +67,6 @@ export function PreviewEmail() {
       setHtml(data);
     }
   );
-
   return (
     <Dialog>
       <DialogTrigger asChild>

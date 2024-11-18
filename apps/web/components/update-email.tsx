@@ -42,7 +42,10 @@ interface SaveEmailProps {
 export function UpdateEmail(props: SaveEmailProps) {
   const { templateId } = props;
 
-  const { json, previewText, subject } = useEditorContext((s) => s, shallow);
+  const { json, previewText, subject, html, clearHtml } = useEditorContext(
+    (s) => s,
+    shallow
+  );
 
   const [action] = useServerAction(
     catchActionError(updateEmailAction),
@@ -53,7 +56,7 @@ export function UpdateEmail(props: SaveEmailProps) {
         toast.error(error.message || 'Something went wrong');
         return;
       }
-
+      clearHtml();
       toast.success('Email has been updated');
     }
   );
@@ -65,7 +68,9 @@ export function UpdateEmail(props: SaveEmailProps) {
       <input name="subject" type="hidden" value={subject} />
       <input name="json" type="hidden" value={JSON.stringify(json) || ''} />
       <input name="previewText" type="hidden" value={previewText} />
-      <SubmitButton />
+      <input name="previewText" type="hidden" value={previewText} />
+      <input name="html" type="hidden" value={html} />
+      <SubmitButton disabled={html === ''} />
     </form>
   );
 }

@@ -38,7 +38,10 @@ function SubmitButton(props: SubmitButtonProps) {
 }
 
 export function SaveEmail() {
-  const { json, previewText, subject } = useEditorContext((s) => s, shallow);
+  const { json, previewText, subject, html,clearHtml } = useEditorContext(
+    (s) => s,
+    shallow
+  );
 
   const [action] = useServerAction(
     catchActionError(saveEmailAction),
@@ -49,7 +52,7 @@ export function SaveEmail() {
         toast.error(error.message || 'Something went wrong');
         return;
       }
-
+      clearHtml()
       // There is a issue with the redirect, and revalidatePath
       // https://github.com/vercel/next.js/issues/58772
       // return redirect(`/template/${data.id}`);
@@ -63,7 +66,8 @@ export function SaveEmail() {
       <input name="subject" type="hidden" value={subject} />
       <input name="json" type="hidden" value={JSON.stringify(json) || ''} />
       <input name="previewText" type="hidden" value={previewText} />
-      <SubmitButton />
+      <input name="html" type="hidden" value={html} />
+      <SubmitButton disabled={html === ''} />
     </form>
   );
 }

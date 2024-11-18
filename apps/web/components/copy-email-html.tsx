@@ -33,20 +33,23 @@ function SubmitButton(props: SubmitButtonProps) {
       ) : (
         <ClipboardCopy className="inline-block shrink-0 sm:mr-1" size={16} />
       )}
-      <span className="hidden sm:inline-block">Copy HTML</span>
+      <span className="hidden sm:inline-block">Save Template</span>
     </button>
   );
 }
 
 export function CopyEmailHtml() {
-  const { json, previewText } = useEditorContext((s) => {
+  const { json, previewText, subject } = useEditorContext((s) => {
     return {
       json: s.json,
       previewText: s.previewText,
+      subject: s.subject,
     };
   }, shallow);
   const [_, copy] = useCopyToClipboard();
-
+  const { setHtml } = useEditorContext((state) => ({
+    setHtml: state.setHtml,
+  }));
   const [action] = useServerAction(
     catchActionError(previewEmailAction),
     async (result) => {
@@ -56,8 +59,8 @@ export function CopyEmailHtml() {
         toast.error(error.message || 'Something went wrong');
         return;
       }
-
       await copy(data);
+      setHtml(data);
       toast.success('Email HTML copied to clipboard');
     }
   );
@@ -67,7 +70,8 @@ export function CopyEmailHtml() {
     <form action={action}>
       <input name="json" type="hidden" value={JSON.stringify(json) || ''} />
       <input name="previewText" type="hidden" value={previewText} />
-      <SubmitButton disabled={!json} />
+      <input name="previewText" type="hidden" value={previewText} />
+      <SubmitButton disabled={!json || subject === ''} />
     </form>
   );
 }

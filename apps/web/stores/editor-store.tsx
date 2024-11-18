@@ -15,6 +15,7 @@ interface EditorProps {
   from: string;
   to: string;
   replyTo?: string;
+  html?: string;
 
   provider?: string;
   apiKey?: string;
@@ -27,6 +28,8 @@ interface EditorState extends EditorProps {
   setEditor: (editor: TiptapEditor | undefined) => void;
   setJson: (json: JSONContent) => void;
   setPreviewText: (previewText: string) => void;
+  setHtml: (html: string) => void;
+  clearHtml: () => void;
 
   setSubject: (subject: string) => void;
   setFrom: (from: string) => void;
@@ -65,7 +68,7 @@ const createEditorStore = (initProps?: Partial<EditorProps>) => {
     from: '',
     to: '',
     replyTo: '',
-
+    html: '',
     apiKey: undefined,
     endpoint: undefined,
 
@@ -78,6 +81,9 @@ const createEditorStore = (initProps?: Partial<EditorProps>) => {
     setEditor: (editor) => {
       set(() => ({ editor }));
     },
+    setHtml: (html: string) => {
+      set(() => ({ html }));
+    },
     setJson: (json) => {
       set(() => ({ json }));
     },
@@ -87,6 +93,7 @@ const createEditorStore = (initProps?: Partial<EditorProps>) => {
     setSubject: (subject) => {
       set(() => ({ subject }));
     },
+    clearHtml: () => set({ html: '' }),
     setFrom: (from) => {
       set(() => ({ from }));
     },

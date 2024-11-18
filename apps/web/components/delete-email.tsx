@@ -16,6 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from './ui/dialog';
+import { useEditorContext } from '@/stores/editor-store';
 
 interface SubmitButtonProps {
   disabled?: boolean;
@@ -48,6 +49,7 @@ interface SaveEmailProps {
 
 export function DeleteEmail(props: SaveEmailProps) {
   const { templateId } = props;
+  const { clearHtml } = useEditorContext((s) => s);
 
   const [action] = useServerAction(
     catchActionError(deleteEmailAction),
@@ -58,7 +60,7 @@ export function DeleteEmail(props: SaveEmailProps) {
         toast.error(error.message || 'Something went wrong');
         return;
       }
-
+      clearHtml();
       window.location.href = '/template';
     }
   );
