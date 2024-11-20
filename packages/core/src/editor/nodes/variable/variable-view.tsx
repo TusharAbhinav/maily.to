@@ -1,3 +1,20 @@
+/**
+ * NOTE: Variable Functionality Status
+ * -----------------------------------
+ * The following features have been disabled for the current API-based implementation:
+ * - Default values for variables
+ * - Conditional rendering of content
+ * 
+ * Current Implementation:
+ * - Variables are strictly populated through API calls
+ * - Direct variable replacement in the rendered HTML
+ * - Simple {{variable}} syntax supported
+ * 
+ * This simplification aligns with our use case of:
+ * 1. Receiving variables via API
+ * 2. Injecting them into HTML templates
+ * 3. Returning the fully rendered content
+ */
 import {
   Popover,
   PopoverContent,
@@ -38,9 +55,9 @@ export function VariableView(props: NodeViewProps) {
           >
             <Braces className="mly-size-[var(--variable-icon-size)] mly-shrink-0 mly-stroke-[2.5] mly-text-rose-600" />
             {id}
-            {isRequired && !fallback && (
+            {/* {isRequired && !fallback && (
               <AlertTriangle className="mly-size-[var(--variable-icon-size)] mly-shrink-0 mly-stroke-[2.5]" />
-            )}
+            )} */}
           </span>
         </PopoverTrigger>
         <PopoverContent
@@ -69,8 +86,8 @@ export function VariableView(props: NodeViewProps) {
                 />
               </label>
 
-              <Divider className="mly-mx-1.5" />
-
+              {/* <Divider className="mly-mx-1.5" /> */}
+              {/* 
               <label className="mly-relative">
                 <span className="mly-inline-block mly-px-2 mly-pl-1 mly-text-xs mly-text-midnight-gray">
                   Default
@@ -88,8 +105,8 @@ export function VariableView(props: NodeViewProps) {
                 <div className="mly-absolute mly-inset-y-0 mly-right-1 mly-flex mly-items-center">
                   <Pencil className="mly-h-3 mly-w-3 mly-stroke-[2.5] mly-text-midnight-gray" />
                 </div>
-              </label>
-
+              </label> */}
+              {/* 
               <Divider />
 
               <ShowPopover
@@ -99,7 +116,7 @@ export function VariableView(props: NodeViewProps) {
                     showIfKey: value,
                   });
                 }}
-              />
+              /> */}
             </div>
           </TooltipProvider>
         </PopoverContent>
