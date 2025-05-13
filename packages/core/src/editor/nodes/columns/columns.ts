@@ -2,8 +2,8 @@ import { goToColumn } from '@/editor/utils/columns';
 import { updateAttributes } from '@/editor/utils/update-attribute';
 import { mergeAttributes } from '@tiptap/core';
 import { Node } from '@tiptap/core';
-import { v4 as uuid } from 'uuid';
 import { DEFAULT_SECTION_SHOW_IF_KEY } from '../section/section';
+import { v4 as uuidv4 } from 'uuid';
 
 export const DEFAULT_COLUMNS_GAP = 8;
 
@@ -21,7 +21,7 @@ declare module '@tiptap/core' {
   }
 }
 
-export const Columns = Node.create({
+export const ColumnsExtension = Node.create({
   name: 'columns',
   group: 'columns',
   content: 'column+',
@@ -78,7 +78,7 @@ export const Columns = Node.create({
               {
                 type: 'column',
                 attrs: {
-                  columnId: uuid(),
+                  columnId: uuidv4(),
                 },
                 content: [
                   {
@@ -89,7 +89,7 @@ export const Columns = Node.create({
               {
                 type: 'column',
                 attrs: {
-                  columnId: uuid(),
+                  columnId: uuidv4(),
                 },
                 content: [
                   {
@@ -109,6 +109,7 @@ export const Columns = Node.create({
       'div',
       mergeAttributes(HTMLAttributes, {
         'data-type': 'columns',
+        class: 'mly-relative',
       }),
       0,
     ];

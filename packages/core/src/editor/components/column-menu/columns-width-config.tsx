@@ -1,6 +1,7 @@
 import { Columns2, SlidersVertical, Columns3 } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '../popover';
 import { cn } from '@/editor/utils/classname';
+import { AUTOCOMPLETE_PASSWORD_MANAGERS_OFF } from '@/editor/utils/constants';
 
 type ColumnsWidthConfigProps = {
   columnsCount: number;
@@ -20,7 +21,7 @@ export function ColumnsWidthConfig(props: ColumnsWidthConfigProps) {
 
   return (
     <Popover>
-      <PopoverTrigger className="mly-flex mly-size-7 mly-items-center mly-justify-center mly-gap-1 mly-rounded-md mly-text-sm hover:mly-bg-soft-gray data-[state=open]:mly-bg-soft-gray">
+      <PopoverTrigger className="mly-flex mly-size-7 mly-items-center mly-justify-center mly-gap-1 mly-rounded-md mly-text-sm data-[state=open]:mly-bg-soft-gray hover:mly-bg-soft-gray">
         <SlidersVertical className="mly-h-3 mly-w-3 mly-stroke-[2.5]" />
       </PopoverTrigger>
       <PopoverContent
@@ -78,6 +79,7 @@ export function ColumnsWidthConfig(props: ColumnsWidthConfigProps) {
 
                 <label className="mly-relative">
                   <input
+                    {...AUTOCOMPLETE_PASSWORD_MANAGERS_OFF}
                     placeholder="auto"
                     min={1}
                     max={90}

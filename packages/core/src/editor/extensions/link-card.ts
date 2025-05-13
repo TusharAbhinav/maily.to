@@ -10,6 +10,8 @@ declare module '@tiptap/core' {
   }
 }
 
+export type LinkCardOptions = {};
+
 export const LinkCardExtension = Node.create({
   name: 'linkCard',
   group: 'block',
@@ -81,6 +83,8 @@ export const LinkCardExtension = Node.create({
   },
 
   addNodeView() {
-    return ReactNodeViewRenderer(LinkCardComponent);
+    return ReactNodeViewRenderer(LinkCardComponent, {
+      className: 'mly-relative',
+    });
   },
 });

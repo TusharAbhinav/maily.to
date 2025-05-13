@@ -3,6 +3,7 @@ import { useId } from 'react';
 import { Divider } from './divider';
 import { Popover, PopoverContent, PopoverTrigger } from '../popover';
 import { ChevronUp } from 'lucide-react';
+import { AUTOCOMPLETE_PASSWORD_MANAGERS_OFF } from '@/editor/utils/constants';
 
 type EdgeSpacingControlProps = {
   top?: number;
@@ -33,7 +34,7 @@ export function EdgeSpacingControl(props: EdgeSpacingControlProps) {
         <ChevronUp size={14} />
       </PopoverTrigger>
       <PopoverContent
-        className="mly-flex mly-max-w-max mly-gap-0.5 mly-rounded-md mly-border !mly-p-0.5 mly-shadow-none"
+        className="mly-flex mly-max-w-max mly-gap-0.5 mly-rounded-md mly-border mly-border-gray-200 !mly-p-0.5 mly-shadow-none"
         side="top"
         sideOffset={8}
       >
@@ -87,6 +88,7 @@ function InputWithLabel(props: InputWithLabelProps) {
       )}
     >
       <input
+        {...AUTOCOMPLETE_PASSWORD_MANAGERS_OFF}
         id={id}
         min={0}
         type="number"

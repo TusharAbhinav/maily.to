@@ -5,25 +5,29 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/editor/components/popover';
+import { ShowPopover } from '@/editor/components/show-popover';
 import { ColorPicker } from '@/editor/components/ui/color-picker';
 import { Divider } from '@/editor/components/ui/divider';
 import { LinkInputPopover } from '@/editor/components/ui/link-input-popover';
 import { Select } from '@/editor/components/ui/select';
 import { TooltipProvider } from '@/editor/components/ui/tooltip';
 import { cn } from '@/editor/utils/classname';
+import { useVariableOptions } from '@/editor/utils/node-options';
 import { NodeViewProps, NodeViewWrapper } from '@tiptap/react';
-import { Pencil } from 'lucide-react';
+import { CSSProperties, useMemo } from 'react';
 import {
   allowedButtonBorderRadius,
   AllowedButtonVariant,
   allowedButtonVariant,
+  ButtonAttributes,
 } from './button';
-import { ShowPopover } from '@/editor/components/show-popover';
+import { ButtonLabelInput } from './button-label-input';
 
 export function ButtonView(props: NodeViewProps) {
   const { node, editor, getPos, updateAttributes } = props;
   const {
     text,
+    isTextVariable,
     alignment,
     variant,
     borderRadius: _radius,
@@ -31,25 +35,57 @@ export function ButtonView(props: NodeViewProps) {
     textColor,
     url: externalLink,
     showIfKey = '',
-  } = node.attrs;
+    isUrlVariable,
+    paddingTop,
+    paddingRight,
+    paddingBottom,
+    paddingLeft,
+  } = node.attrs as ButtonAttributes;
+
+  const opts = useVariableOptions(editor);
+  const renderVariable = opts?.renderVariable;
+
+  const sizes = useMemo(
+    () => ({
+      small: {
+        paddingX: 24,
+        paddingY: 6,
+      },
+      medium: {
+        paddingX: 32,
+        paddingY: 10,
+      },
+      large: {
+        paddingX: 40,
+        paddingY: 14,
+      },
+    }),
+    []
+  );
+
+  const size = useMemo(() => {
+    return Object.entries(sizes).find(
+      ([, { paddingX, paddingY }]) =>
+        paddingRight === paddingX && paddingTop === paddingY
+    )?.[0] as 'small' | 'medium' | 'large';
+  }, [paddingRight, paddingTop, sizes]);
 
   return (
     <NodeViewWrapper
-      draggable="true"
-      data-drag-handle=""
+      draggable={editor.isEditable}
+      data-drag-handle={editor.isEditable}
       data-type="button"
       style={{
         textAlign: alignment,
       }}
     >
-      <Popover open={props.selected}>
+      <Popover open={props.selected && editor.isEditable}>
         <PopoverTrigger asChild>
           <div>
             <button
               className={cn(
                 'mly-inline-flex mly-items-center mly-justify-center mly-rounded-md mly-text-sm mly-font-medium mly-ring-offset-white mly-transition-colors disabled:mly-pointer-events-none disabled:mly-opacity-50',
-                'mly-h-10 mly-px-4 mly-py-2',
-                'mly-px-[32px] mly-py-[20px] mly-font-semibold mly-no-underline',
+                'mly-font-semibold mly-no-underline',
                 {
                   '!mly-rounded-full': _radius === 'round',
                   '!mly-rounded-md': _radius === 'smooth',
@@ -57,21 +93,42 @@ export function ButtonView(props: NodeViewProps) {
                 }
               )}
               tabIndex={-1}
-              style={{
-                backgroundColor:
-                  variant === 'filled' ? buttonColor : 'transparent',
-                color: textColor,
-                borderWidth: 2,
-                borderStyle: 'solid',
-                borderColor: buttonColor,
-              }}
+              style={
+                {
+                  backgroundColor:
+                    variant === 'filled' ? buttonColor : 'transparent',
+                  color: textColor,
+                  borderWidth: 2,
+                  borderStyle: 'solid',
+                  borderColor: buttonColor,
+                  // decrease the border color opacity to 80%
+                  // so that it's not too prominent
+                  '--button-var-border-color': `${textColor}80`,
+
+                  paddingTop,
+                  paddingRight,
+                  paddingBottom,
+                  paddingLeft,
+                } as CSSProperties
+              }
               onClick={(e) => {
                 e.preventDefault();
+                if (!editor.isEditable) {
+                  return;
+                }
+
                 const pos = getPos();
                 editor.commands.setNodeSelection(pos);
               }}
             >
-              {text}
+              {isTextVariable
+                ? renderVariable({
+                    variable: { name: text, valid: true },
+                    fallback: text,
+                    from: 'button-variable',
+                    editor,
+                  })
+                : text}
             </button>
           </div>
         </PopoverTrigger>
@@ -85,20 +142,17 @@ export function ButtonView(props: NodeViewProps) {
         >
           <TooltipProvider>
             <div className="mly-flex mly-items-stretch mly-text-midnight-gray">
-              <label className="mly-relative">
-                <input
-                  value={text}
-                  onChange={(e) => {
-                    updateAttributes({
-                      text: e.target.value,
-                    });
-                  }}
-                  className="mly-h-7 mly-w-40 mly-rounded-md mly-px-2 mly-pr-6 mly-text-sm mly-text-midnight-gray hover:mly-bg-soft-gray focus:mly-bg-soft-gray focus:mly-outline-none"
-                />
-                <div className="mly-absolute mly-inset-y-0 mly-right-1 mly-flex mly-items-center">
-                  <Pencil className="mly-h-3 mly-w-3 mly-stroke-[2.5] mly-text-midnight-gray" />
-                </div>
-              </label>
+              <ButtonLabelInput
+                value={text}
+                onValueChange={(value, isVariable) => {
+                  updateAttributes({
+                    text: value,
+                    isTextVariable: isVariable ?? false,
+                  });
+                }}
+                isVariable={isTextVariable}
+                editor={editor}
+              />
 
               <Divider />
 
@@ -134,6 +188,28 @@ export function ButtonView(props: NodeViewProps) {
                   tooltip="Style"
                   className="mly-capitalize"
                 />
+
+                <Select
+                  label="Size"
+                  value={size}
+                  options={[
+                    { value: 'small', label: 'Small' },
+                    { value: 'medium', label: 'Medium' },
+                    { value: 'large', label: 'Large' },
+                  ]}
+                  onValueChange={(value) => {
+                    const { paddingX, paddingY } =
+                      sizes[value as 'small' | 'medium' | 'large'];
+
+                    updateAttributes({
+                      paddingTop: paddingY,
+                      paddingRight: paddingX,
+                      paddingBottom: paddingY,
+                      paddingLeft: paddingX,
+                    });
+                  }}
+                  tooltip="Size"
+                />
               </div>
 
               <Divider />
@@ -150,12 +226,15 @@ export function ButtonView(props: NodeViewProps) {
 
                 <LinkInputPopover
                   defaultValue={externalLink || ''}
-                  onValueChange={(value) => {
+                  onValueChange={(value, isVariable) => {
                     updateAttributes({
                       url: value,
+                      isUrlVariable: isVariable ?? false,
                     });
                   }}
                   tooltip="Update External Link"
+                  editor={editor}
+                  isVariable={isUrlVariable}
                 />
               </div>
 
@@ -191,6 +270,7 @@ export function ButtonView(props: NodeViewProps) {
                     showIfKey: value,
                   });
                 }}
+                editor={editor}
               />
             </div>
           </TooltipProvider>

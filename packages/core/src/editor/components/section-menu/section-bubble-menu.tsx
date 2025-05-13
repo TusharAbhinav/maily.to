@@ -1,38 +1,27 @@
-import { BubbleMenu, isTextSelection } from '@tiptap/react';
-import { useCallback } from 'react';
-import { getRenderContainer } from '../../utils/get-render-container';
-import { sticky } from 'tippy.js';
-import { useSectionState } from './use-section-state';
-import { NumberInput } from '../ui/number-input';
-import {
-  AlignCenter,
-  AlignLeft,
-  AlignRight,
-  Box,
-  BoxSelect,
-  ChevronUp,
-  Scan,
-  Trash,
-} from 'lucide-react';
-import { ColorPicker } from '../ui/color-picker';
-import { EditorBubbleMenuProps } from '../text-menu/text-bubble-menu';
+import { deleteNode } from '@/editor/utils/delete-node';
 import { isTextSelected } from '@/editor/utils/is-text-selected';
-import { Divider } from '../ui/divider';
-import { BubbleMenuButton } from '../bubble-menu-button';
-import { GridLines } from '../icons/grid-lines';
-import { EdgeSpacingControl } from '../ui/edge-spacing-controls';
-import { TooltipProvider } from '../ui/tooltip';
+import { BubbleMenu, findChildren } from '@tiptap/react';
+import { ChevronUp, Trash } from 'lucide-react';
+import { useCallback } from 'react';
+import { sticky } from 'tippy.js';
+import { getRenderContainer } from '../../utils/get-render-container';
 import { AlignmentSwitch } from '../alignment-switch';
 import { BaseButton } from '../base-button';
+import { BubbleMenuButton } from '../bubble-menu-button';
+import { ColumnsBubbleMenuContent } from '../column-menu/columns-bubble-menu-content';
 import { BorderColor } from '../icons/border-color';
-import { Select } from '../ui/select';
-import { allowedButtonBorderRadius } from '@/editor/nodes/button/button';
 import { MarginIcon } from '../icons/margin-icon';
 import { PaddingIcon } from '../icons/padding-icon';
-import { ColumnsBubbleMenuContent } from '../column-menu/columns-bubble-menu-content';
 import { Popover, PopoverContent, PopoverTrigger } from '../popover';
 import { ShowPopover } from '../show-popover';
-import { deleteNode } from '@/editor/utils/delete-node';
+import { EditorBubbleMenuProps } from '../text-menu/text-bubble-menu';
+import { ColorPicker } from '../ui/color-picker';
+import { Divider } from '../ui/divider';
+import { Select } from '../ui/select';
+import { TooltipProvider } from '../ui/tooltip';
+import { useSectionState } from './use-section-state';
+import { getClosestNodeByName } from '@/editor/utils/columns';
+import { spacing } from '@/editor/utils/spacing';
 
 export function SectionBubbleMenu(props: EditorBubbleMenuProps) {
   const { appendTo, editor } = props;
@@ -53,7 +42,28 @@ export function SectionBubbleMenu(props: EditorBubbleMenuProps) {
     ...props,
     ...(appendTo ? { appendTo: appendTo.current } : {}),
     shouldShow: ({ editor }) => {
-      if (isTextSelected(editor) || editor.isActive('for')) {
+      const activeSectionNode = getClosestNodeByName(editor, 'section');
+      const repeatNodeChildren = activeSectionNode
+        ? findChildren(activeSectionNode?.node, (node) => {
+            return node.type.name === 'repeat';
+          })?.[0]
+        : null;
+      const inlineImageNodeChildren = activeSectionNode
+        ? findChildren(activeSectionNode?.node, (node) => {
+            return node.type.name === 'inlineImage';
+          })?.[0]
+        : null;
+      const hasActiveRepeatNodeChildren =
+        repeatNodeChildren && editor.isActive('repeat');
+      const hasActiveInlineImageNodeChildren =
+        inlineImageNodeChildren && editor.isActive('inlineImage');
+
+      if (
+        isTextSelected(editor) ||
+        hasActiveRepeatNodeChildren ||
+        hasActiveInlineImageNodeChildren ||
+        !editor.isEditable
+      ) {
         return false;
       }
 
@@ -84,7 +94,7 @@ export function SectionBubbleMenu(props: EditorBubbleMenuProps) {
   return (
     <BubbleMenu
       {...bubbleMenuProps}
-      className="mly-flex mly-items-stretch mly-rounded-lg mly-border mly-border-slate-200 mly-bg-white mly-p-0.5 mly-shadow-md"
+      className="mly-flex mly-items-stretch mly-rounded-lg mly-border mly-border-gray-200 mly-bg-white mly-p-0.5 mly-shadow-md"
     >
       <TooltipProvider>
         <AlignmentSwitch
@@ -140,9 +150,10 @@ export function SectionBubbleMenu(props: EditorBubbleMenuProps) {
           value={String(state.currentMarginTop)}
           options={[
             { value: '0', label: 'None' },
-            { value: '4', label: 'Small' },
-            { value: '8', label: 'Medium' },
-            { value: '12', label: 'Large' },
+            ...spacing.map((space) => ({
+              label: space.name,
+              value: String(space.value),
+            })),
           ]}
           onValueChange={(_value) => {
             const value = Number(_value);
@@ -166,9 +177,10 @@ export function SectionBubbleMenu(props: EditorBubbleMenuProps) {
           value={String(state.currentPaddingTop)}
           options={[
             { value: '0', label: 'None' },
-            { value: '4', label: 'Small' },
-            { value: '8', label: 'Medium' },
-            { value: '12', label: 'Large' },
+            ...spacing.map((space) => ({
+              label: space.name,
+              value: String(space.value),
+            })),
           ]}
           onValueChange={(_value) => {
             const value = Number(_value);
@@ -242,13 +254,14 @@ export function SectionBubbleMenu(props: EditorBubbleMenuProps) {
               showIfKey: value,
             });
           }}
+          editor={editor}
         />
 
         {state.isColumnsActive && (
           <>
             <Divider />
             <Popover>
-              <PopoverTrigger className="mly-flex mly-items-center mly-gap-1 mly-rounded-md mly-px-1.5 mly-text-sm hover:mly-bg-soft-gray data-[state=open]:mly-bg-soft-gray">
+              <PopoverTrigger className="mly-flex mly-items-center mly-gap-1 mly-rounded-md mly-px-1.5 mly-text-sm data-[state=open]:mly-bg-soft-gray hover:mly-bg-soft-gray">
                 Column
                 <ChevronUp className="mly-h-3 mly-w-3" />
               </PopoverTrigger>

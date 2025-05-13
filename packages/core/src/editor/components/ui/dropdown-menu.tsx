@@ -46,7 +46,7 @@ const DropdownMenuSubContent = React.forwardRef<
   <DropdownMenuPrimitive.SubContent
     ref={ref}
     className={cn(
-      'bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 mly-z-50 mly-min-w-[8rem] mly-overflow-hidden mly-rounded-md mly-border mly-p-1 mly-shadow-lg',
+      'bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 mly-z-50 mly-min-w-[8rem] mly-overflow-hidden mly-rounded-md mly-border mly-border-gray-200 mly-p-1 mly-shadow-lg',
       className
     )}
     {...props}
@@ -64,7 +64,7 @@ const DropdownMenuContent = React.forwardRef<
       ref={ref}
       sideOffset={sideOffset}
       className={cn(
-        'bg-white mly-z-50 mly-min-w-[8rem] mly-overflow-hidden mly-rounded-md mly-border mly-p-1 mly-shadow-md',
+        'bg-white mly-z-50 mly-min-w-[8rem] mly-overflow-hidden mly-rounded-md mly-border mly-border-gray-200 mly-p-1 mly-shadow-md',
         className
       )}
       {...props}
@@ -82,7 +82,7 @@ const DropdownMenuItem = React.forwardRef<
   <DropdownMenuPrimitive.Item
     ref={ref}
     className={cn(
-      'mly-relative mly-flex mly-cursor-default mly-select-none mly-items-center mly-gap-2 mly-rounded-sm mly-px-2 mly-py-1 mly-text-sm mly-outline-none mly-transition-colors focus:mly-bg-gray-100 data-[disabled]:mly-pointer-events-none data-[disabled]:mly-opacity-50 [&_svg]:mly-pointer-events-none',
+      'mly-relative mly-flex mly-cursor-default mly-select-none mly-items-center mly-gap-2 mly-rounded-sm mly-px-2 mly-py-1 mly-text-sm mly-outline-none mly-transition-colors data-[disabled]:mly-pointer-events-none data-[disabled]:mly-opacity-50 focus:mly-bg-gray-100 [&_svg]:mly-pointer-events-none',
       inset && 'pl-8',
       className
     )}

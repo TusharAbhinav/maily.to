@@ -12,10 +12,10 @@ export const DEFAULT_SECTION_MARGIN_RIGHT = 0;
 export const DEFAULT_SECTION_MARGIN_BOTTOM = 0;
 export const DEFAULT_SECTION_MARGIN_LEFT = 0;
 
-export const DEFAULT_SECTION_PADDING_TOP = 5;
-export const DEFAULT_SECTION_PADDING_RIGHT = 5;
-export const DEFAULT_SECTION_PADDING_BOTTOM = 5;
-export const DEFAULT_SECTION_PADDING_LEFT = 5;
+export const DEFAULT_SECTION_PADDING_TOP = 0;
+export const DEFAULT_SECTION_PADDING_RIGHT = 0;
+export const DEFAULT_SECTION_PADDING_BOTTOM = 0;
+export const DEFAULT_SECTION_PADDING_LEFT = 0;
 
 export const DEFAULT_SECTION_SHOW_IF_KEY = null;
 
@@ -306,7 +306,7 @@ export const SectionExtension = Node.create({
         border: 0,
         cellpadding: 0,
         cellspacing: 0,
-        class: 'mly-w-full mly-border-separate',
+        class: 'mly-w-full mly-border-separate mly-relative mly-table-fixed',
         style: `margin-top: ${marginTop}px; margin-right: ${marginRight}px; margin-bottom: ${marginBottom}px; margin-left: ${marginLeft}px;`,
       },
       [

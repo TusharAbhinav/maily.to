@@ -1,4 +1,4 @@
-import { AllowedLogoAlignment } from '@/editor/nodes/logo';
+import { AllowedLogoAlignment } from '@/editor/nodes/logo/logo';
 import { Editor, useEditorState } from '@tiptap/react';
 import deepEql from 'fast-deep-equal';
 
@@ -26,6 +26,14 @@ export const useTextMenuState = (editor: Editor) => {
         isListActive:
           ctx.editor.isActive('bulletList') ||
           ctx.editor.isActive('orderedList'),
+        isUrlVariable: ctx.editor.getAttributes('link').isUrlVariable ?? false,
+
+        isHeadingActive: ctx.editor.isActive('heading'),
+        headingShowIfKey: ctx.editor.getAttributes('heading')?.showIfKey || '',
+
+        isParagraphActive: ctx.editor.isActive('paragraph'),
+        paragraphShowIfKey:
+          ctx.editor.getAttributes('paragraph')?.showIfKey || '',
       };
     },
     equalityFn: deepEql,

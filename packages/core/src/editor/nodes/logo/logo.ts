@@ -23,6 +23,7 @@ export interface LogoAttributes {
   alignment?: AllowedLogoAlignment;
 
   showIfKey: string;
+  isSrcVariable?: boolean;
 }
 
 declare module '@tiptap/core' {
@@ -42,16 +43,6 @@ export const logoSizes: Record<AllowedLogoSize, string> = {
   md: '48px',
   lg: '64px',
 };
-
-function getAlignmentStyle(alignment: AllowedLogoAlignment): string[] {
-  const alignments: Record<AllowedLogoAlignment, string[]> = {
-    left: ['margin-right:auto', 'margin-left:0'],
-    center: ['margin-right:auto', 'margin-left:auto'],
-    right: ['margin-right:0', 'margin-left:auto'],
-  };
-
-  return alignments[alignment] || alignments[DEFAULT_ALIGNMENT];
-}
 
 export const LogoExtension = TiptapImage.extend({
   name: 'logo',
@@ -108,6 +99,25 @@ export const LogoExtension = TiptapImage.extend({
           };
         },
       },
+
+      // Later we will remove this attribute
+      // and use the `src` attribute instead when implement
+      // the URL variable feature
+      isSrcVariable: {
+        default: false,
+        parseHTML: (element) => {
+          return element.getAttribute('data-is-src-variable') === 'true';
+        },
+        renderHTML: (attributes) => {
+          if (!attributes.isSrcVariable) {
+            return {};
+          }
+
+          return {
+            'data-is-src-variable': 'true',
+          };
+        },
+      },
     };
   },
   addCommands() {
@@ -135,6 +145,8 @@ export const LogoExtension = TiptapImage.extend({
     ];
   },
   addNodeView() {
-    return ReactNodeViewRenderer(LogoView);
+    return ReactNodeViewRenderer(LogoView, {
+      className: 'mly-relative',
+    });
   },
 });
